@@ -9,12 +9,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   flame:
+  flame_svg:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/
