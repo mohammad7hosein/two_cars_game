@@ -11,7 +11,9 @@ dependencies:
     sdk: flutter
 
   flame:
+  flame_tiled:
   flame_svg:
+  flame_noise:
 
 dev_dependencies:
   flutter_test:
@@ -23,3 +25,4 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/tiles/

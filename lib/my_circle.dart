@@ -15,6 +15,7 @@ class MyCircle extends PositionComponent {
     required super.position,
   }) : super(
           size: Vector2.all(radius * 2),
+          anchor: Anchor.center,
         );
 
   @override
@@ -31,7 +32,7 @@ class MyCircle extends PositionComponent {
   @override
   void render(Canvas canvas) {
     canvas.drawCircle(
-      size.toOffset(),
+      (size / 2).toOffset(),
       radius,
       _paint..color = color,
     );
