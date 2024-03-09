@@ -1,31 +1,53 @@
 import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
-class MyCar extends PositionComponent {
-  final Color myColor;
-  final Vector2 myPosition;
+class MyCar extends PositionComponent with CollisionCallbacks {
+  final String sprite;
+  late Sprite _imageSprite;
 
-  MyCar(this.myColor, this.myPosition);
+  MyCar({
+    required super.position,
+    required this.sprite,
+  }) : super(
+          size: Vector2(50, 80),
+          anchor: Anchor.center,
+        );
 
   @override
-  void onMount() {
-    position = myPosition;
-    anchor = Anchor.center;
-    super.onMount();
+  Future<void> onLoad() async {
+    _imageSprite = await Sprite.load(sprite);
+    add(RectangleHitbox(
+      size: size,
+      position: size / 2,
+      anchor: anchor,
+      collisionType: CollisionType.active,
+    ));
+    super.onLoad();
+  }
+
+  @override
+  void update(double dt) {
+    // position.y--;
+    super.update(dt);
   }
 
   @override
   void render(Canvas canvas) {
+    _imageSprite.render(
+      canvas,
+      size: size,
+      position: size / 2,
+      anchor: anchor,
+    );
     super.render(canvas);
-    Path getTrianglePath(double x, double y) {
-      return Path()
-        ..moveTo(0, y)
-        ..lineTo(x / 2, 0)
-        ..lineTo(x, y)
-        ..lineTo(0, y);
-    }
-    canvas.drawPath(getTrianglePath(50, 50), Paint()..color = myColor);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+
+    super.onCollision(intersectionPoints, other);
   }
 
 }

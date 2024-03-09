@@ -1,77 +1,81 @@
-import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:two_cars_game/my_car.dart';
 import 'package:two_cars_game/my_circle.dart';
 import 'package:two_cars_game/my_square.dart';
 
-class MyGame extends FlameGame with TapCallbacks {
-  late SpriteComponent redCar;
-  late SpriteComponent orangeCar;
+class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
+  late MyCar redCar;
+  late MyCar orangeCar;
   late double section;
-  late Vector2 carSize;
+  late double x1;
+  late double x2;
+  late double x3;
+  late double x4;
 
-  // MyGame()
-  //     : super(
-  //         camera: CameraComponent.withFixedResolution(
-  //           width: 400,
-  //           height: 850,
-  //         ),
-  //       );
+  MyGame()
+      : super(
+        // camera: CameraComponent.withFixedResolution(
+        //   width: 600,
+        //   height: 1000,
+        // ),
+        );
+
+  @override
+  Color backgroundColor() => Colors.white60;
 
   @override
   Future<void> onLoad() async {
-    super.onLoad();
-
-    SpriteComponent background = SpriteComponent()
-      ..sprite = await loadSprite('game_background.png')
-      ..size = size;
-    add(background);
-
-    carSize = Vector2(50, 80);
+    // SpriteComponent background = SpriteComponent()
+    //   ..sprite = await loadSprite('game_background.png')
+    //   ..position = Vector2(0, 0)
+    //   ..size = size
+    //   ..anchor = Anchor.center;
+    // world.add(background);
+    debugMode = true;
     section = (size.x / 4);
-    var startY = size.y - 150;
-    var start1 = Vector2(section - carSize.x - 25, startY);
-    var start2 = Vector2(4 * section - carSize.x - 25, startY);
+    x1 = -(section + section / 2);
+    x2 = -section / 2;
+    x3 = section / 2;
+    x4 = section + section / 2;
 
-    redCar = SpriteComponent()
-      ..sprite = await loadSprite('red_car.png')
-      ..size = carSize
-      ..position = start1;
-    add(redCar);
-    orangeCar = SpriteComponent()
-      ..sprite = await loadSprite('orange_car.png')
-      ..size = carSize
-      ..position = start2;
-    add(orangeCar);
+    redCar = MyCar(position: Vector2(x1, 0), sprite: 'red_car.png');
+    orangeCar = MyCar(position: Vector2(x3, 0), sprite: 'orange_car.png');
 
-    add(MyCircle(Colors.red, Vector2(section - 60, 50)));
-    add(MyCircle(Colors.orangeAccent, Vector2(2 * section - 60, 100)));
-    add(MySquare(Colors.red, Vector2(3 * section - 30, 200)));
-    add(MySquare(Colors.orangeAccent, Vector2(4 * section - 30, 300)));
+    world.add(redCar);
+    world.add(orangeCar);
+    world.add(MyCircle(color: Colors.red, position: Vector2(x1, 100)));
+    world.add(MyCircle(color: Colors.orangeAccent, position: Vector2(x2, 150)));
+    world.add(MySquare(color: Colors.red, position: Vector2(x3, 200)));
+    world.add(MySquare(color: Colors.orangeAccent, position: Vector2(x4, 250)));
+    super.onLoad();
   }
 
   @override
   void update(double dt) {
+    final cameraY = camera.viewfinder.position.y;
+    final playerY = redCar.position.y;
+    if (playerY < cameraY) {
+      camera.viewfinder.position = Vector2(0, playerY);
+    }
     super.update(dt);
-    redCar.y--;
-    orangeCar.y--;
   }
 
   @override
   void onTapDown(TapDownEvent event) {
     super.onTapDown(event);
-    if (event.localPosition.x > size.x / 2) {
-      if (orangeCar.x > 3 * section) {
-        orangeCar.x -= section;
+    if (event.devicePosition.x > 2 * section) {
+      if (orangeCar.x > section) {
+        orangeCar.x = x3;
       } else {
-        orangeCar.x += section;
+        orangeCar.x = x4;
       }
     } else {
-      if (redCar.x > section) {
-        redCar.x -= section;
+      if (redCar.x > -section) {
+        redCar.x = x1;
       } else {
-        redCar.x += section;
+        redCar.x = x2;
       }
     }
   }

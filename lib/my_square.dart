@@ -1,26 +1,38 @@
 import 'dart:async';
 import 'dart:ui';
+
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 class MySquare extends PositionComponent {
-  final Color myColor;
-  final Vector2 myPosition;
+  final Color color;
+  final _paint = Paint();
 
-  MySquare(this.myColor, this.myPosition);
+  MySquare({
+    required this.color,
+    required super.position,
+  }) : super(
+          anchor: Anchor.center,
+          size: Vector2.all(40),
+        );
 
   @override
   FutureOr<void> onLoad() {
+    add(RectangleHitbox(
+      position: size / 2,
+      size: size,
+      anchor: anchor,
+      collisionType: CollisionType.passive,
+    ));
     super.onLoad();
-    position = myPosition;
-    size = Vector2.all(30);
-    anchor = Anchor.center;
   }
 
   @override
   void render(Canvas canvas) {
     super.render(canvas);
     canvas.drawRect(
-        Rect.fromCenter(center: Offset.zero, width: size.x, height: size.y),
-        Paint()..color = myColor);
+      size.toRect(),
+      _paint..color = color,
+    );
   }
 }
