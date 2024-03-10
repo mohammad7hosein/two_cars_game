@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:two_cars_game/my_circle.dart';
 import 'package:two_cars_game/my_game.dart';
 import 'package:two_cars_game/my_square.dart';
@@ -64,6 +65,13 @@ class MyCar extends PositionComponent with CollisionCallbacks, HasGameRef<MyGame
       gameRef.gameOver();
     }
     super.onCollision(intersectionPoints, other);
+  }
+
+  void goToX(double x) {
+    add(MoveByEffect(
+      Vector2(x, 0),
+      EffectController(duration: 0.3),
+    ));
   }
 
   void gameOver() {
