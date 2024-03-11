@@ -1,13 +1,17 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 
 class MyCircle extends PositionComponent {
   final Color color;
   final double radius;
   final _paint = Paint();
+  final _innerPaint = Paint()
+    ..color = Colors.white
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 5;
 
   MyCircle({
     this.radius = 20,
@@ -35,6 +39,11 @@ class MyCircle extends PositionComponent {
       (size / 2).toOffset(),
       radius,
       _paint..color = color,
+    );
+    canvas.drawCircle(
+      (size / 2).toOffset(),
+      radius / 1.5,
+      _innerPaint,
     );
     super.render(canvas);
   }

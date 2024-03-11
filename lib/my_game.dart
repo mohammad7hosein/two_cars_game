@@ -1,16 +1,11 @@
-import 'dart:math';
-
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_noise/flame_noise.dart';
 import 'package:flutter/material.dart';
+import 'package:two_cars_game/patterns.dart';
 import 'package:two_cars_game/my_car.dart';
-import 'package:two_cars_game/my_circle.dart';
-import 'package:two_cars_game/my_square.dart';
-
-enum Shape { Circle, Square }
 
 class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   late MyCar redCar;
@@ -20,71 +15,62 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   late double x2;
   late double x3;
   late double x4;
-  late final Random _random;
   bool _isGamePaused = false;
+
+  final List<PositionComponent> _gameComponents = [];
 
   final ValueNotifier<int> currentScore = ValueNotifier(0);
   final ValueNotifier<bool> isGameOver = ValueNotifier(false);
 
-  MyGame()
-      : super(
-        // camera: CameraComponent.withFixedResolution(
-        //   width: 600,
-        //   height: 1000,
-        // ),
-        );
+  MyGame() : super();
 
   @override
   Future<void> onLoad() async {
     SpriteComponent background = SpriteComponent()
       ..sprite = await loadSprite('game_background.png')
       ..size = size;
-    camera.backdrop.add(background);
+    camera.backdrop = background;
 
     section = (size.x / 4);
     x1 = -(section + section / 2);
     x2 = -section / 2;
     x3 = section / 2;
     x4 = section + section / 2;
-    _random = Random();
 
-    redCar = MyCar(position: Vector2(x1, size.y - 500), sprite: 'red_car.png');
-    orangeCar = MyCar(position: Vector2(x4, size.y - 500), sprite: 'orange_car.png');
+    redCar = MyCar(
+      position: Vector2(x1, size.y - 500),
+      sprite: 'red_car.png',
+      color: redColor,
+    );
+    orangeCar = MyCar(
+      position: Vector2(x4, size.y - 500),
+      sprite: 'orange_car.png',
+      color: orangeColor,
+    );
     world.add(redCar);
     world.add(orangeCar);
-
-    _generateGameComponents(0);
 
     super.onLoad();
   }
 
-  int next(int min, int max) => min + _random.nextInt(max - min);
-
-  void _generateGameComponents(int yPosition) {
-    int step1 = 0;
-    int step2 = 0;
-    for (int i = 0; i < 4; i++) {
-      step1 += 200;
-      step2 += 300;
-      yPosition += step1;
-      final y1 = next(yPosition, yPosition + step1);
-      final y2 = next(yPosition, yPosition + step2);
-      _generateCircleOrSquare(x1, -y1.toDouble(), Colors.red);
-      _generateCircleOrSquare(x2, -y2.toDouble(), Colors.red);
-      final y3 = next(yPosition, yPosition + step1);
-      final y4 = next(yPosition, yPosition + step2);
-      _generateCircleOrSquare(x3, -y3.toDouble(), Colors.orangeAccent);
-      _generateCircleOrSquare(x4, -y4.toDouble(), Colors.orangeAccent);
-    }
+  @override
+  void onMount() {
+    _generateGameComponents(250);
+    super.onMount();
   }
 
-  void _generateCircleOrSquare(double x, double y, Color color) {
-    final shape = _random.nextBool() ? Shape.Circle : Shape.Square;
-    if (shape == Shape.Circle) {
-      world.add(MyCircle(color: color, position: Vector2(x, y)));
-    } else {
-      world.add(MySquare(color: color, position: Vector2(x, y)));
-    }
+  void _addComponentToTheGame(PositionComponent component) {
+    world.add(component);
+    _gameComponents.add(component);
+  }
+
+  void _generateGameComponents(double yPosition) {
+    generate1(redColor, x1, x2, yPosition).forEach((element) {
+      _addComponentToTheGame(element);
+    });
+    generate1(orangeColor, x3, x4, yPosition + 50).forEach((element) {
+      _addComponentToTheGame(element);
+    });
   }
 
   @override
@@ -102,15 +88,15 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     super.onTapDown(event);
     if (event.devicePosition.x > 2 * section) {
       if (orangeCar.x > section) {
-        orangeCar.goToX(-section);
+        orangeCar.goToLeft(-section);
       } else {
-        orangeCar.goToX(section);
+        orangeCar.goToRight(section);
       }
     } else {
       if (redCar.x > -section) {
-        redCar.goToX(-section);
+        redCar.goToLeft(-section);
       } else {
-        redCar.goToX(section);
+        redCar.goToRight(section);
       }
     }
   }
@@ -143,6 +129,7 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   }
 
   void restartGame() {
+    _gameComponents.clear();
     redCar.restart();
     orangeCar.restart();
     redCar.position = Vector2(x1, size.y - 500);
@@ -150,7 +137,7 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     camera.moveTo(Vector2(0, 0));
     isGameOver.value = false;
     currentScore.value = 0;
-    // TODO: generate components
+    _generateGameComponents(250);
   }
 
   void shake() {
@@ -163,5 +150,32 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
         ),
       ),
     );
+  }
+
+  void checkToGenerateNextBatch(PositionComponent component) {
+    final length = _gameComponents.length;
+    for (int i = 0; i < length; i++) {
+      if (component == _gameComponents[i] && i >= length - 10) {
+        final lastComponent = _gameComponents.last;
+        _generateGameComponents(lastComponent.position.y - 250);
+        _tryToGarbageCollect(component);
+      }
+    }
+  }
+
+  void _tryToGarbageCollect(PositionComponent component) {
+    for (int i = 0; i < _gameComponents.length; i++) {
+      if (component == _gameComponents[i] && i >= 20) {
+        _removeComponentsFromGame(i - 15);
+        break;
+      }
+    }
+  }
+
+  void _removeComponentsFromGame(int n) {
+    for (int i = n - 1; i >= 0; i--) {
+      _gameComponents[i].removeFromParent();
+      _gameComponents.removeAt(i);
+    }
   }
 }

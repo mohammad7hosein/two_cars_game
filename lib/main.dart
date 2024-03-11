@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
               builder: (context, bool value, child) {
                 return value
                     ? Container(
-                        color: Colors.black45,
+                        color: Colors.black54,
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -48,23 +48,30 @@ class _HomePageState extends State<HomePage> {
                                 'GAME OVER!',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 48,
+                                  fontSize: 36,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(
-                                width: 140,
-                                height: 140,
-                                child: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _myGame.restartGame();
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.refresh_rounded,
-                                    size: 140,
-                                  ),
+                              const SizedBox(height: 20),
+                              Text(
+                                'SCORE: ${_myGame.currentScore.value}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 40),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _myGame.restartGame();
+                                  });
+                                },
+                                icon: const Icon(
+                                  Icons.refresh_rounded,
+                                  color: Colors.white,
+                                  size: 120,
                                 ),
                               ),
                             ],
@@ -77,26 +84,35 @@ class _HomePageState extends State<HomePage> {
             if (_myGame.isGamePlaying)
               Row(
                 children: [
-                  Align(
-                    alignment: Alignment.topLeft,
+                  Expanded(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
                           onPressed: () {
-                            setState(() {
-                              _myGame.pauseGame();
-                            });
+                            if (!_myGame.isGameOver.value) {
+                              setState(() {
+                                _myGame.pauseGame();
+                              });
+                            }
                           },
-                          icon: const Icon(Icons.pause_rounded),
+                          icon: const Icon(
+                            Icons.pause_rounded,
+                            color: Colors.white,
+                            size: 36,
+                          ),
                         ),
                         ValueListenableBuilder(
                           valueListenable: _myGame.currentScore,
                           builder: (context, int value, child) {
-                            return Text(
-                              value.toString(),
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(
+                                value.toString(),
+                                style: const TextStyle(
+                                  fontSize: 36,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             );
                           },
@@ -117,23 +133,19 @@ class _HomePageState extends State<HomePage> {
                         'PAUSED!',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 48,
+                          fontSize: 36,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
-                        width: 140,
-                        height: 140,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _myGame.resumeGame();
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.play_arrow_rounded,
-                            size: 140,
-                          ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _myGame.resumeGame();
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.play_arrow_rounded,
+                          size: 120,
                         ),
                       ),
                     ],

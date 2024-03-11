@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -10,6 +9,12 @@ import 'package:flutter/material.dart';
 class MySquare extends PositionComponent {
   final Color color;
   final _paint = Paint();
+  final _innerPaint = Paint()
+    ..color = Colors.white
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 5;
+  final double _innerSize = 25;
+  final _innerCenter = const Offset(20, 20);
 
   MySquare({
     required this.color,
@@ -33,21 +38,35 @@ class MySquare extends PositionComponent {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    canvas.drawRect(
-      size.toRect(),
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        size.toRect(),
+        const Radius.circular(10),
+      ),
       _paint..color = color,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: _innerCenter,
+          width: _innerSize,
+          height: _innerSize,
+        ),
+        const Radius.circular(5),
+      ),
+      _innerPaint,
     );
   }
 
   void exploit() {
     final rnd = Random();
-    Vector2 randomVector2() => (Vector2.random(rnd) - Vector2.random(rnd)) * 80;
+    Vector2 randomVector2() => (Vector2.random(rnd) - Vector2.random(rnd)) * 100;
     parent!.add(
       ParticleSystemComponent(
         position: position,
         particle: Particle.generate(
-          count: 40,
-          lifespan: 0.8,
+          count: 70,
+          lifespan: 0.7,
           generator: (i) {
             return AcceleratedParticle(
               speed: randomVector2(),
@@ -56,11 +75,7 @@ class MySquare extends PositionComponent {
                 to: randomVector2(),
                 child: ComputedParticle(renderer: (canvas, particle) {
                   canvas.drawRect(
-                    Rect.fromCenter(
-                      center: const Offset(5, 5),
-                      width: 10,
-                      height: 10,
-                    ),
+                    Vector2(7, 7).toRect(),
                     _paint
                       ..color = color.withOpacity(
                         1 - particle.progress,
