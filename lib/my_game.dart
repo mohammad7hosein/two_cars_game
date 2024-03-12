@@ -95,11 +95,11 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   }
 
   void _generateGameComponents(double yPosition) {
-    generatePattern(_random.nextInt(8), redColor, x1, x2, yPosition)
+    generatePattern(_random.nextInt(8)+1, redColor, x1, x2, yPosition)
         .forEach((element) {
       _addComponentToTheGame(element);
     });
-    generatePattern(_random.nextInt(8), orangeColor, x3, x4, yPosition + 50)
+    generatePattern(_random.nextInt(8)+1, orangeColor, x3, x4, yPosition + 50)
         .forEach((element) {
       _addComponentToTheGame(element);
     });
