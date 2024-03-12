@@ -1,14 +1,24 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'my_game.dart';
 
 void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: const HomePage(),
-    theme: ThemeData.dark(),
-  ));
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const HomePage(),
+      theme: ThemeData.dark(),
+    ),
+  );
+
+  FlutterNativeSplash.remove();
 }
 
 class HomePage extends StatefulWidget {

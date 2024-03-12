@@ -13,8 +13,6 @@ class MySquare extends PositionComponent {
     ..color = Colors.white
     ..style = PaintingStyle.stroke
     ..strokeWidth = 5;
-  final double _innerSize = 25;
-  final _innerCenter = const Offset(20, 20);
 
   MySquare({
     required this.color,
@@ -48,9 +46,9 @@ class MySquare extends PositionComponent {
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(
-          center: _innerCenter,
-          width: _innerSize,
-          height: _innerSize,
+          center: const Offset(20, 20),
+          width: 25,
+          height: 25,
         ),
         const Radius.circular(5),
       ),

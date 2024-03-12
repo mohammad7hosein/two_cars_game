@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/extensions.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 import 'package:two_cars_game/my_circle.dart';
@@ -41,13 +42,13 @@ class MyCar extends PositionComponent with CollisionCallbacks, HasGameRef<MyGame
     super.onLoad();
   }
 
-  double _velocity = 100;
+  Vector2 _velocity = Vector2(0, 100);
 
   @override
   void update(double dt) {
     if (!_isGameOver) {
-      _velocity += 10 * dt;
-      position.y -= _velocity * dt;
+      position -= _velocity * dt;
+      _velocity.y += 10 * dt;
       smoke();
     }
     super.update(dt);
@@ -96,7 +97,7 @@ class MyCar extends PositionComponent with CollisionCallbacks, HasGameRef<MyGame
     if (other is MyCircle) {
       other.removeFromParent();
       gameRef.increaseScore();
-      gameRef.checkToGenerateNextBatch(other);
+      gameRef.checkToGenerateNextPattern(other);
     } else if (other is MySquare) {
       other.exploit();
       gameRef.shake();
@@ -140,7 +141,7 @@ class MyCar extends PositionComponent with CollisionCallbacks, HasGameRef<MyGame
   }
 
   void restart() {
-    _velocity = 100;
+    _velocity = Vector2(0, 100);
     _isGameOver = false;
   }
 }

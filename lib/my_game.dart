@@ -4,8 +4,8 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_noise/flame_noise.dart';
 import 'package:flutter/material.dart';
-import 'package:two_cars_game/patterns.dart';
 import 'package:two_cars_game/my_car.dart';
+import 'package:two_cars_game/patterns.dart';
 
 class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   late MyCar redCar;
@@ -59,20 +59,6 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     super.onMount();
   }
 
-  void _addComponentToTheGame(PositionComponent component) {
-    world.add(component);
-    _gameComponents.add(component);
-  }
-
-  void _generateGameComponents(double yPosition) {
-    generate1(redColor, x1, x2, yPosition).forEach((element) {
-      _addComponentToTheGame(element);
-    });
-    generate1(orangeColor, x3, x4, yPosition + 50).forEach((element) {
-      _addComponentToTheGame(element);
-    });
-  }
-
   @override
   void update(double dt) {
     final cameraY = camera.viewfinder.position.y;
@@ -98,6 +84,47 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
       } else {
         redCar.goToRight(section);
       }
+    }
+  }
+
+  void _addComponentToTheGame(PositionComponent component) {
+    world.add(component);
+    _gameComponents.add(component);
+  }
+
+  void _generateGameComponents(double yPosition) {
+    generate1(redColor, x1, x2, yPosition).forEach((element) {
+      _addComponentToTheGame(element);
+    });
+    generate1(orangeColor, x3, x4, yPosition + 50).forEach((element) {
+      _addComponentToTheGame(element);
+    });
+  }
+
+  void checkToGenerateNextPattern(PositionComponent component) {
+    final length = _gameComponents.length;
+    for (int i = 0; i < length; i++) {
+      if (component == _gameComponents[i] && i >= length - 10) {
+        final lastComponent = _gameComponents.last;
+        _generateGameComponents(lastComponent.position.y - 250);
+        _tryToGarbageCollect(component);
+      }
+    }
+  }
+
+  void _tryToGarbageCollect(PositionComponent component) {
+    for (int i = 0; i < _gameComponents.length; i++) {
+      if (component == _gameComponents[i] && i >= 20) {
+        _removeComponentsFromGame(i - 15);
+        break;
+      }
+    }
+  }
+
+  void _removeComponentsFromGame(int n) {
+    for (int i = n - 1; i >= 0; i--) {
+      _gameComponents[i].removeFromParent();
+      _gameComponents.removeAt(i);
     }
   }
 
@@ -152,30 +179,4 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     );
   }
 
-  void checkToGenerateNextBatch(PositionComponent component) {
-    final length = _gameComponents.length;
-    for (int i = 0; i < length; i++) {
-      if (component == _gameComponents[i] && i >= length - 10) {
-        final lastComponent = _gameComponents.last;
-        _generateGameComponents(lastComponent.position.y - 250);
-        _tryToGarbageCollect(component);
-      }
-    }
-  }
-
-  void _tryToGarbageCollect(PositionComponent component) {
-    for (int i = 0; i < _gameComponents.length; i++) {
-      if (component == _gameComponents[i] && i >= 20) {
-        _removeComponentsFromGame(i - 15);
-        break;
-      }
-    }
-  }
-
-  void _removeComponentsFromGame(int n) {
-    for (int i = n - 1; i >= 0; i--) {
-      _gameComponents[i].removeFromParent();
-      _gameComponents.removeAt(i);
-    }
-  }
 }
