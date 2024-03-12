@@ -1,9 +1,7 @@
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-
-import 'my_game.dart';
+import 'package:two_cars_game/home_screen.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -13,158 +11,10 @@ void main() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      home: const HomeScreen(),
       theme: ThemeData.dark(),
     ),
   );
 
   FlutterNativeSplash.remove();
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  late MyGame _myGame;
-
-  @override
-  void initState() {
-    _myGame = MyGame();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Stack(
-          children: [
-            GameWidget(game: _myGame),
-            ValueListenableBuilder(
-              valueListenable: _myGame.isGameOver,
-              builder: (context, bool value, child) {
-                return value
-                    ? Container(
-                        color: Colors.black54,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'GAME OVER!',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                'SCORE: ${_myGame.currentScore.value}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 40),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _myGame.restartGame();
-                                  });
-                                },
-                                icon: const Icon(
-                                  Icons.refresh_rounded,
-                                  color: Colors.white,
-                                  size: 120,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : const SizedBox();
-              },
-            ),
-            if (_myGame.isGamePlaying)
-              Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            if (!_myGame.isGameOver.value) {
-                              setState(() {
-                                _myGame.pauseGame();
-                              });
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.pause_rounded,
-                            color: Colors.white,
-                            size: 36,
-                          ),
-                        ),
-                        ValueListenableBuilder(
-                          valueListenable: _myGame.currentScore,
-                          builder: (context, int value, child) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                value.toString(),
-                                style: const TextStyle(
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            if (_myGame.isGamePaused)
-              Container(
-                color: Colors.black45,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'PAUSED!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _myGame.resumeGame();
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.play_arrow_rounded,
-                          size: 120,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 }

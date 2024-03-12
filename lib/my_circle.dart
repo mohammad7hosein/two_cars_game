@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 
 class MyCircle extends PositionComponent {
@@ -46,5 +47,10 @@ class MyCircle extends PositionComponent {
       _innerPaint,
     );
     super.render(canvas);
+  }
+
+  void removeCircle() {
+    RemoveEffect(delay: 0.5);
+    removeFromParent();
   }
 }

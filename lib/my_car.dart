@@ -13,7 +13,8 @@ import 'package:two_cars_game/my_square.dart';
 const orangeColor = Color(0xFFFF9955);
 const redColor = Color(0xFFE44545);
 
-class MyCar extends PositionComponent with CollisionCallbacks, HasGameRef<MyGame> {
+class MyCar extends PositionComponent
+    with CollisionCallbacks, HasGameRef<MyGame> {
   final Color color;
   final String sprite;
   late Sprite _imageSprite;
@@ -42,13 +43,17 @@ class MyCar extends PositionComponent with CollisionCallbacks, HasGameRef<MyGame
     super.onLoad();
   }
 
-  Vector2 _velocity = Vector2(0, 100);
+  double _velocity = 1;
 
   @override
   void update(double dt) {
     if (!_isGameOver) {
-      position -= _velocity * dt;
-      _velocity.y += 10 * dt;
+      position.y -= _velocity;
+      if (_velocity > 10) {
+        _velocity += 0.05 * dt;
+      } else {
+        _velocity += 0.1 * dt;
+      }
       smoke();
     }
     super.update(dt);
@@ -95,7 +100,7 @@ class MyCar extends PositionComponent with CollisionCallbacks, HasGameRef<MyGame
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is MyCircle) {
-      other.removeFromParent();
+      other.removeCircle();
       gameRef.increaseScore();
       gameRef.checkToGenerateNextPattern(other);
     } else if (other is MySquare) {
@@ -141,7 +146,7 @@ class MyCar extends PositionComponent with CollisionCallbacks, HasGameRef<MyGame
   }
 
   void restart() {
-    _velocity = Vector2(0, 100);
+    _velocity = 1;
     _isGameOver = false;
   }
 }

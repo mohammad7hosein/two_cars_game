@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
@@ -16,7 +18,7 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   late double x3;
   late double x4;
   bool _isGamePaused = false;
-
+  final Random _random = Random();
   final List<PositionComponent> _gameComponents = [];
 
   final ValueNotifier<int> currentScore = ValueNotifier(0);
@@ -93,10 +95,12 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   }
 
   void _generateGameComponents(double yPosition) {
-    generate1(redColor, x1, x2, yPosition).forEach((element) {
+    generatePattern(_random.nextInt(8), redColor, x1, x2, yPosition)
+        .forEach((element) {
       _addComponentToTheGame(element);
     });
-    generate1(orangeColor, x3, x4, yPosition + 50).forEach((element) {
+    generatePattern(_random.nextInt(8), orangeColor, x3, x4, yPosition + 50)
+        .forEach((element) {
       _addComponentToTheGame(element);
     });
   }
@@ -104,9 +108,8 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   void checkToGenerateNextPattern(PositionComponent component) {
     final length = _gameComponents.length;
     for (int i = 0; i < length; i++) {
-      if (component == _gameComponents[i] && i >= length - 10) {
-        final lastComponent = _gameComponents.last;
-        _generateGameComponents(lastComponent.position.y - 250);
+      if (component == _gameComponents[i] && i >= length - 30) {
+        _generateGameComponents(_gameComponents.last.position.y - 50);
         _tryToGarbageCollect(component);
       }
     }
@@ -114,8 +117,8 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
   void _tryToGarbageCollect(PositionComponent component) {
     for (int i = 0; i < _gameComponents.length; i++) {
-      if (component == _gameComponents[i] && i >= 20) {
-        _removeComponentsFromGame(i - 15);
+      if (component == _gameComponents[i] && i >= 50) {
+        _removeComponentsFromGame(10);
         break;
       }
     }
@@ -178,5 +181,4 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
       ),
     );
   }
-
 }
