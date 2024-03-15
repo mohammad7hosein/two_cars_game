@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/particles.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:two_cars_game/my_circle.dart';
 import 'package:two_cars_game/my_game.dart';
@@ -43,7 +44,7 @@ class MyCar extends PositionComponent
     super.onLoad();
   }
 
-  double _velocity = 1;
+  double _velocity = 2;
 
   @override
   void update(double dt) {
@@ -100,10 +101,12 @@ class MyCar extends PositionComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is MyCircle) {
+      FlameAudio.play('collect.wav');
       other.removeCircle();
       gameRef.increaseScore();
       gameRef.checkToGenerateNextPattern(other);
     } else if (other is MySquare) {
+      FlameAudio.play('explosion.wav');
       other.exploit();
       gameRef.shake();
       gameRef.gameOver();
@@ -146,7 +149,7 @@ class MyCar extends PositionComponent
   }
 
   void restart() {
-    _velocity = 1;
+    _velocity = 2;
     _isGameOver = false;
   }
 }

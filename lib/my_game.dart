@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_noise/flame_noise.dart';
 import 'package:flutter/material.dart';
 import 'package:two_cars_game/my_car.dart';
@@ -24,7 +25,10 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   final ValueNotifier<int> currentScore = ValueNotifier(0);
   final ValueNotifier<bool> isGameOver = ValueNotifier(false);
 
-  MyGame() : super();
+  MyGame()
+      : super(
+        // camera: CameraComponent.withFixedResolution(width: 600, height: 1200),
+        );
 
   @override
   Future<void> onLoad() async {
@@ -33,6 +37,11 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
       ..size = size;
     camera.backdrop = background;
 
+    FlameAudio.audioCache.loadAll([
+      'collect.wav',
+      'explosion.wav',
+    ]);
+
     section = (size.x / 4);
     x1 = -(section + section / 2);
     x2 = -section / 2;
@@ -40,18 +49,18 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     x4 = section + section / 2;
 
     redCar = MyCar(
-      position: Vector2(x1, size.y - 500),
+      position: Vector2(x1, size.y - 400),
       sprite: 'red_car.png',
       color: redColor,
     );
     orangeCar = MyCar(
-      position: Vector2(x4, size.y - 500),
+      position: Vector2(x4, size.y - 400),
       sprite: 'orange_car.png',
       color: orangeColor,
     );
     world.add(redCar);
     world.add(orangeCar);
-    _generateGameComponents(250);
+    _generateGameComponents(200);
 
     super.onLoad();
   }
@@ -162,16 +171,16 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     camera.moveTo(Vector2(0, 0));
     isGameOver.value = false;
     currentScore.value = 0;
-    _generateGameComponents(250);
+    _generateGameComponents(200);
   }
 
   void shake() {
     camera.viewfinder.add(
       MoveEffect.by(
-        Vector2(8, 8),
+        Vector2(10, 10),
         PerlinNoiseEffectController(
           duration: 1,
-          frequency: 400,
+          frequency: 500,
         ),
       ),
     );

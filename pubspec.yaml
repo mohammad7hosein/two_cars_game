@@ -11,9 +11,10 @@ dependencies:
     sdk: flutter
 
   flame: ^1.16.0
+  flame_audio:
   flame_noise: ^0.1.1+12
   flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.3.13
+  flutter_native_splash:
 
 flutter_launcher_icons:
   image_path_android: "assets/images/2_cars_logo.png"
@@ -42,3 +43,4 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/audio/
