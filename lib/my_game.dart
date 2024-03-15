@@ -51,14 +51,9 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     );
     world.add(redCar);
     world.add(orangeCar);
+    _generateGameComponents(250);
 
     super.onLoad();
-  }
-
-  @override
-  void onMount() {
-    _generateGameComponents(250);
-    super.onMount();
   }
 
   @override
@@ -95,11 +90,11 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   }
 
   void _generateGameComponents(double yPosition) {
-    generatePattern(_random.nextInt(8)+1, redColor, x1, x2, yPosition)
+    generatePattern(_random.nextInt(8) + 1, redColor, x1, x2, yPosition)
         .forEach((element) {
       _addComponentToTheGame(element);
     });
-    generatePattern(_random.nextInt(8)+1, orangeColor, x3, x4, yPosition + 50)
+    generatePattern(_random.nextInt(8) + 1, orangeColor, x3, x4, yPosition + 50)
         .forEach((element) {
       _addComponentToTheGame(element);
     });
@@ -159,7 +154,7 @@ class MyGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   }
 
   void restartGame() {
-    _gameComponents.clear();
+    _removeComponentsFromGame(_gameComponents.length);
     redCar.restart();
     orangeCar.restart();
     redCar.position = Vector2(x1, size.y - 500);
