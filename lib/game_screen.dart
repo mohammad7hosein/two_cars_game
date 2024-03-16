@@ -80,45 +80,49 @@ class _GameScreenState extends State<GameScreen> {
               },
             ),
             if (_myGame.isGamePlaying)
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 45),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          if (!_myGame.isGameOver.value) {
-                            setState(() {
-                              _myGame.pauseGame();
-                            });
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.pause_rounded,
-                          color: Colors.white,
-                          size: 36,
-                        ),
-                      ),
-                      ValueListenableBuilder(
-                        valueListenable: _myGame.currentScore,
-                        builder: (context, int value, child) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              value.toString(),
-                              style: const TextStyle(
-                                fontSize: 36,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 45),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              if (!_myGame.isGameOver.value) {
+                                setState(() {
+                                  _myGame.pauseGame();
+                                });
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.pause_rounded,
+                              color: Colors.white,
+                              size: 36,
                             ),
-                          );
-                        },
+                          ),
+                          ValueListenableBuilder(
+                            valueListenable: _myGame.currentScore,
+                            builder: (context, int value, child) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(
+                                  value.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 36,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             if (_myGame.isGamePaused)
               Container(
